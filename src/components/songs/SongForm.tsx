@@ -188,10 +188,10 @@ export default function SongForm({ onClose, initialSong }: SongFormProps) {
       }
 
       const uploadFormData = new FormData()
-      uploadFormData.append("file", file)
+      uploadFormData.append("song", file)
 
       try {
-        const response = await fetch("http://localhost:3000/api/v1/upload", {
+        const response = await fetch("http://localhost:3000/api/v1/songs/upload", {
           method: "POST",
           body: uploadFormData,
         })
@@ -203,7 +203,7 @@ export default function SongForm({ onClose, initialSong }: SongFormProps) {
         const data = await response.json()
         setFormData((prev) => ({
           ...prev,
-          audioUrl: data.url,
+          audioUrl: data.audioUrl,
         }))
       } catch (error: any) {
         setError(error.message)
