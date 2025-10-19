@@ -2,7 +2,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import styled from "@emotion/styled"
 import { useDispatch } from "react-redux"
-import { addSong, updateSong } from "../../store/slices/songsSlice"
+import { createSong, updateSong } from "../../store/slices/songsSlice"
 import { X } from "lucide-react"
 import type { Song } from "../../types"
 
@@ -195,7 +195,7 @@ export default function SongForm({ onClose, initialSong }: SongFormProps) {
       )
     } else {
       dispatch(
-        addSong({
+        createSong({
           id: Date.now().toString(),
           ...formData,
         }),
