@@ -3,6 +3,8 @@
 import { Box, Flex, Button, Text } from "rebass"
 import styled from "@emotion/styled"
 import { Menu, Search } from "lucide-react"
+import { useDispatch } from "react-redux"
+import { setSearchQuery } from "../../store/slices/songsSlice"
 
 interface TopBarProps {
   onMenuClick: () => void
@@ -32,34 +34,13 @@ const SearchInput = styled.input`
   }
 `
 
-// const UserProfile = styled(Flex)`
-//   background-color: var(--secondary);
-//   border-radius: 24px;
-//   cursor: pointer;
-//   transition: all 0.15s ease-in-out;
-//
-//   &:hover {
-//     background-color: var(--primary);
-//   }
-//
-//   @media (max-width: 768px) {
-//     display: none;
-//   }
-// `
-
-// const Avatar = styled(Box)`
-//   width: 32px;
-//   height: 32px;
-//   border-radius: 50%;
-//   background-color: var(--primary);
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   font-weight: 600;
-//   font-size: 0.875rem;
-// `
-
 export default function TopBar({ onMenuClick }: TopBarProps) {
+  const dispatch = useDispatch()
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setSearchQuery(e.target.value))
+  }
+
   return (
     <Box
       as="header"
@@ -104,8 +85,8 @@ export default function TopBar({ onMenuClick }: TopBarProps) {
             maxWidth: ["200px", "400px"],
           }}
         >
-          <Search size={18} color="#000" />
-          <SearchInput placeholder="Search songs, artists..." />
+          <Search size={18} color="var(--muted-foreground)" />
+          <SearchInput placeholder="Search songs, artists..." onChange={handleSearchChange} />
         </SearchContainer>
       </Flex>
     </Box>

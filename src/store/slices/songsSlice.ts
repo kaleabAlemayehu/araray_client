@@ -5,12 +5,14 @@ interface SongsState {
   items: Song[]
   loading: boolean
   error: string | null
+  searchQuery: string
 }
 
 const initialState: SongsState = {
   items: [],
   loading: false,
   error: null,
+  searchQuery: "",
 }
 
 const songsSlice = createSlice({
@@ -53,8 +55,11 @@ const songsSlice = createSlice({
       state.loading = true
       state.error = null
     },
+    setSearchQuery: (state, action: PayloadAction<string>) => {
+      state.searchQuery = action.payload
+    },
   },
 })
 
-export const { fetchSongs, setSongs, createSong, addSong, updateSong, deleteSong, deleteSongSuccess, setSongsLoading, setSongsError } = songsSlice.actions
+export const { fetchSongs, setSongs, createSong, addSong, updateSong, deleteSong, deleteSongSuccess, setSongsLoading, setSongsError, setSearchQuery } = songsSlice.actions
 export default songsSlice.reducer

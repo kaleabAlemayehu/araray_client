@@ -109,11 +109,18 @@ export default function SongList() {
   const [editingSong, setEditingSong] = useState<Song | null>(null)
   const [deletingSong, setDeletingSong] = useState<Song | null>(null)
   const dispatch = useDispatch()
-  const songs = useSelector((state: RootState) => state.songs.items)
+  const { items: songs, searchQuery } = useSelector((state: RootState) => state.songs)
 
   useEffect(() => {
     dispatch(fetchSongs())
   }, [dispatch])
+
+  const filteredSongs = songs.filter(
+    (song) =>
+      song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      song.artist.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      song.album.toLowerCase().includes(searchQuery.toLowerCase()),
+  )
 
   const handlePlaySong = (song: Song) => {
     dispatch(setCurrentSong(song))
@@ -154,11 +161,11 @@ export default function SongList() {
         <DeleteModal
           onClose={handleCloseDeleteModal}
           songTitle={deletingSong.title}
-          songID={deletingSong._id}
+          songID={deletingSong.id}
         />
       )}
 
-      {songs.length === 0 ? (
+      {filteredSongs.length === 0 ? (
         <EmptyState>No songs yet. Add your first song to get started!</EmptyState>
       ) : (
         <SongsTable>
@@ -169,7 +176,7 @@ export default function SongList() {
             <div>Genre</div>
             <div>Actions</div>
           </TableHeader>
-          {songs.map((song) => (
+          {filteredSongs.map((song) => (
             <SongRow
               key={song.id}
               song={song}
