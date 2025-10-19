@@ -1,8 +1,10 @@
 "use client"
 
+import { useEffect } from "react"
 import styled from "@emotion/styled"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 import type { RootState } from "../store/store"
+import { fetchStats } from "../store/slices/statsSlice"
 import StatCard from "../components/stats/StatCard"
 import GenreChart from "../components/stats/GenreChart"
 import ArtistChart from "../components/stats/ArtistChart"
@@ -42,39 +44,24 @@ const ChartsGrid = styled.div`
 `
 
 export default function Stats() {
-  const songs = useSelector((state: RootState) => state.songs.items)
-
-  // Calculate statistics
-  const totalSongs = songs.length
-  const uniqueArtists = new Set(songs.map((s) => s.artist)).size
-  const uniqueAlbums = new Set(songs.map((s) => s.album)).size
-  const uniqueGenres = new Set(songs.map((s) => s.genre)).size
-
-  const songsByGenre: Record<string, number> = {}
-  const songsByArtist: Record<string, number> = {}
-  const albumsByArtist: Record<string, Set<string>> = {}
-
-  songs.forEach((song) => {
-    // Count by genre
-    songsByGenre[song.genre] = (songsByGenre[song.genre] || 0) + 1
-
-    // Count by artist
-    songsByArtist[song.artist] = (songsByArtist[song.artist] || 0) + 1
-
-    // Count albums by artist
-    if (!albumsByArtist[song.artist]) {
-      albumsByArtist[song.artist] = new Set()
-    }
-    albumsByArtist[song.artist].add(song.album)
-  })
-
-  const albumsByArtistCount = Object.entries(albumsByArtist).reduce(
-    (acc, [artist, albums]) => {
-      acc[artist] = albums.size
-      return acc
-    },
-    {} as Record<string, number>,
+  const dispatch = useDispatch()
+  const { totalSongs, totalArtists, totalAlbums, totalGenres, songsInGenre, songsByArtist } = useSelector(
+    (state: RootState) => state.stats,
   )
+
+  useEffect(() => {
+    dispatch(fetchStats())
+  }, [dispatch])
+
+  const songsInGenreData = songsInGenre.reduce((acc, item) => {
+    acc[item._id] = item.count
+    return acc
+  }, {} as Record<string, number>)
+
+  const songsByArtistData = songsByArtist.reduce((acc, item) => {
+    acc[item._id] = item.count
+    return acc
+  }, {} as Record<string, number>)
 
   return (
     <StatsContainer>
@@ -82,14 +69,14 @@ export default function Stats() {
 
       <StatsGrid>
         <StatCard label="Total Songs" value={totalSongs} />
-        <StatCard label="Artists" value={uniqueArtists} />
-        <StatCard label="Albums" value={uniqueAlbums} />
-        <StatCard label="Genres" value={uniqueGenres} />
+        <StatCard label="Artists" value={totalArtists} />
+        <StatCard label="Albums" value={totalAlbums} />
+        <StatCard label="Genres" value={totalGenres} />
       </StatsGrid>
 
       <ChartsGrid>
-        <GenreChart data={songsByGenre} />
-        <ArtistChart data={songsByArtist} />
+        <GenreChart data={songsInGenreData} />
+        <ArtistChart data={songsByArtistData} />
       </ChartsGrid>
     </StatsContainer>
   )

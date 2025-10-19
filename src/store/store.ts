@@ -3,6 +3,7 @@ import createSagaMiddleware from "redux-saga"
 import songsReducer from "./slices/songsSlice"
 import playlistsReducer from "./slices/playlistsSlice"
 import playbackReducer from "./slices/playbackSlice"
+import statsReducer from "./slices/statsSlice"
 import rootSaga from "./sagas"
 
 const sagaMiddleware = createSagaMiddleware()
@@ -12,6 +13,7 @@ export const store = configureStore({
     songs: songsReducer,
     playlists: playlistsReducer,
     playback: playbackReducer,
+    stats: statsReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(sagaMiddleware),
 })
