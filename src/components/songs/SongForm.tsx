@@ -178,11 +178,49 @@ export default function SongForm({ onClose, initialSong }: SongFormProps) {
     }))
   }
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const file = e.target.files[0]
+
+      if (!file.type.startsWith("audio/")) {
+        setError("Please select an audio file")
+        return
+      }
+
+      const uploadFormData = new FormData()
+      uploadFormData.append("file", file)
+
+      try {
+        const response = await fetch("http://localhost:3000/api/v1/upload", {
+          method: "POST",
+          body: uploadFormData,
+        })
+
+        if (!response.ok) {
+          throw new Error("File upload failed")
+        }
+
+        const data = await response.json()
+        setFormData((prev) => ({
+          ...prev,
+          audioUrl: data.url,
+        }))
+      } catch (error: any) {
+        setError(error.message)
+      }
+    }
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!formData.title || !formData.artist) {
       setError("Please fill in title and artist")
+      return
+    }
+
+    if (!formData.audioUrl) {
+      setError("Please provide either an audio file or a URL")
       return
     }
 
@@ -265,7 +303,12 @@ export default function SongForm({ onClose, initialSong }: SongFormProps) {
           </FormGroup>
 
           <FormGroup>
-            <Label htmlFor="audioUrl">Audio URL <span style={{ color: "red" }}>*</span></Label>
+            <Label htmlFor="audioFile">Audio File</Label>
+            <Input id="audioFile" name="audioFile" type="file" onChange={handleFileChange} />
+          </FormGroup>
+
+          <FormGroup>
+            <Label htmlFor="audioUrl">Or Audio URL</Label>
             <Input
               id="audioUrl"
               name="audioUrl"
