@@ -24,6 +24,7 @@ export interface PlaybackState {
   currentIndex: number
   shuffle: boolean
   repeat: "off" | "one" | "all"
+  currentTime: number
 }
 
 export interface StatsState {

@@ -1,11 +1,9 @@
-"use client"
-
 import type React from "react"
 import { Box, Flex, Button, Text } from "rebass"
 import styled from "@emotion/styled"
 import { useSelector, useDispatch } from "react-redux"
-import { useEffect, useRef, useState } from "react"
-import { setIsPlaying, nextTrack, previousTrack, toggleShuffle, setRepeat } from "../../store/slices/playbackSlice"
+import { useEffect, useRef } from "react"
+import { setIsPlaying, nextTrack, previousTrack, toggleShuffle, setRepeat, setCurrentTime } from "../../store/slices/playbackSlice"
 import type { RootState } from "../../store/store"
 import { Play, Pause, SkipBack, SkipForward, Shuffle as Shuffle2, Repeat2 } from "lucide-react"
 
@@ -64,10 +62,8 @@ const PlayButton = styled(ControlButton)`
 
 export default function PlayerBar() {
   const dispatch = useDispatch()
-  const { currentSong, isPlaying, shuffle, repeat } = useSelector((state: RootState) => state.playback)
+  const { currentSong, isPlaying, shuffle, repeat, currentTime } = useSelector((state: RootState) => state.playback)
   const audioRef = useRef<HTMLAudioElement | null>(null)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
 
   const handlePlayPause = () => {
     dispatch(setIsPlaying(!isPlaying))
@@ -94,7 +90,7 @@ export default function PlayerBar() {
     if (!audioRef.current) return
     const rect = e.currentTarget.getBoundingClientRect()
     const percent = (e.clientX - rect.left) / rect.width
-    audioRef.current.currentTime = percent * duration
+    audioRef.current.currentTime = percent * (audioRef.current.duration || 0)
   }
 
   const formatTime = (time: number) => {
@@ -109,10 +105,7 @@ export default function PlayerBar() {
     if (!audioRef.current) {
       audioRef.current = new Audio()
       audioRef.current.addEventListener("timeupdate", () => {
-        setCurrentTime(audioRef.current?.currentTime || 0)
-      })
-      audioRef.current.addEventListener("loadedmetadata", () => {
-        setDuration(audioRef.current?.duration || 0)
+        dispatch(setCurrentTime(audioRef.current?.currentTime || 0))
       })
       audioRef.current.addEventListener("ended", () => {
         if (repeat === "one") {
@@ -138,14 +131,18 @@ export default function PlayerBar() {
     if (!audioRef.current) return
 
     if (currentSong) {
-      audioRef.current.src = currentSong.audioUrl
+      if (audioRef.current.src !== currentSong.audioUrl) {
+        audioRef.current.src = currentSong.audioUrl
+        audioRef.current.currentTime = currentTime
+      }
+
       if (isPlaying) {
         audioRef.current.play().catch((err) => console.error("Playback error:", err))
       } else {
         audioRef.current.pause()
       }
     }
-  }, [currentSong, isPlaying])
+  }, [currentSong, isPlaying, currentTime])
 
   return (
     <Box
@@ -211,22 +208,22 @@ export default function PlayerBar() {
       <Flex sx={{ flex: 1, alignItems: "center", gap: 3, minWidth: "200px", display: ["none", "flex"] }}>
         <Text sx={{ fontSize: 0, color: "var(--muted-foreground)", minWidth: "40px" }}>{formatTime(currentTime)}</Text>
         <ProgressBar onClick={handleProgressClick} />
-        <Text sx={{ fontSize: 0, color: "var(--muted-foreground)", minWidth: "40px" }}>{formatTime(duration)}</Text>
+        <Text sx={{ fontSize: 0, color: "var(--muted-foreground)", minWidth: "40px" }}>{formatTime(audioRef.current?.duration || 0)}</Text>
       </Flex>
 
       <Flex sx={{ alignItems: "center", gap: 2, flex: "0 0 auto" }}>
         <ControlButton onClick={handleShuffle} isActive={shuffle}>
-          <Shuffle2 />
+          <Shuffle2 size={20} />
         </ControlButton>
         <ControlButton onClick={handlePrevious}>
-          <SkipBack />
+          <SkipBack size={20} />
         </ControlButton>
         <PlayButton onClick={handlePlayPause}>{isPlaying ? <Pause /> : <Play />}</PlayButton>
         <ControlButton onClick={handleNext}>
-          <SkipForward />
+          <SkipForward size={20} />
         </ControlButton>
         <ControlButton onClick={handleRepeat} isActive={repeat !== "off"}>
-          <Repeat2 />
+          <Repeat2 size={20} />
         </ControlButton>
       </Flex>
     </Box>

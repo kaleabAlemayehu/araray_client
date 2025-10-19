@@ -9,6 +9,7 @@ const initialState: PlaybackState = {
   currentIndex: -1,
   shuffle: false,
   repeat: "off",
+  currentTime: 0,
 }
 
 const playbackSlice = createSlice({
@@ -17,9 +18,13 @@ const playbackSlice = createSlice({
   reducers: {
     setCurrentSong: (state, action: PayloadAction<Song | null>) => {
       state.currentSong = action.payload
+      state.currentTime = 0
     },
     setIsPlaying: (state, action: PayloadAction<boolean>) => {
       state.isPlaying = action.payload
+    },
+    setCurrentTime: (state, action: PayloadAction<number>) => {
+      state.currentTime = action.payload
     },
     setQueue: (state, action: PayloadAction<Song[]>) => {
       state.queue = action.payload
@@ -40,12 +45,14 @@ const playbackSlice = createSlice({
       if (state.currentIndex < state.queue.length - 1) {
         state.currentIndex += 1
         state.currentSong = state.queue[state.currentIndex]
+        state.currentTime = 0
       }
     },
     previousTrack: (state) => {
       if (state.currentIndex > 0) {
         state.currentIndex -= 1
         state.currentSong = state.queue[state.currentIndex]
+        state.currentTime = 0
       }
     },
   },
@@ -54,6 +61,7 @@ const playbackSlice = createSlice({
 export const {
   setCurrentSong,
   setIsPlaying,
+  setCurrentTime,
   setQueue,
   setCurrentIndex,
   setCurrentPlaylistId,
