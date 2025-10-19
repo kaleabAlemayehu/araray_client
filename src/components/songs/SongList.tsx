@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react"
+"use client"
+
+import { useState, useEffect } from "react"
 import styled from "@emotion/styled"
 import { useSelector, useDispatch } from "react-redux"
 import type { RootState } from "../../store/store"
 import { setCurrentSong, setQueue, setIsPlaying } from "../../store/slices/playbackSlice"
 import { fetchSongs } from "../../store/slices/songsSlice"
 import SongForm from "./SongForm"
-import DeleteModal from "./DeleteModal"
 import SongRow from "./SongRow"
 import { Plus } from "lucide-react"
 import type { Song } from "../../types"
+import DeleteModal from "./DeleteModal"
 
 const SongListContainer = styled.div`
   display: flex;
@@ -104,8 +106,8 @@ const EmptyState = styled.div`
 
 export default function SongList() {
   const [showForm, setShowForm] = useState(false)
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [editingSong, setEditingSong] = useState<Song | null>(null)
+  const [deletingSong, setDeletingSong] = useState<Song | null>(null)
   const dispatch = useDispatch()
   const songs = useSelector((state: RootState) => state.songs.items)
 
@@ -120,18 +122,21 @@ export default function SongList() {
   }
 
   const handleEdit = (song: Song) => {
-    // TODO: handle edit song
     setEditingSong(song)
     setShowForm(true)
+  }
+
+  const handleDelete = (song: Song) => {
+    setDeletingSong(song)
   }
 
   const handleCloseForm = () => {
     setShowForm(false)
     setEditingSong(null)
   }
-  const handleDelete = (song: Song) => {
-    // TODO: handle delete song
-    setShowDeleteModal(true)
+
+  const handleCloseDeleteModal = () => {
+    setDeletingSong(null)
   }
 
   return (
@@ -145,7 +150,13 @@ export default function SongList() {
       </Header>
 
       {showForm && <SongForm onClose={handleCloseForm} initialSong={editingSong} />}
-      {showDeleteModal && <DeleteModal onClose={() => setShowDeleteModal(false)} songTitle={editingSong?.title || "The Song"} />}
+      {deletingSong && (
+        <DeleteModal
+          onClose={handleCloseDeleteModal}
+          songTitle={deletingSong.title}
+          songID={deletingSong._id}
+        />
+      )}
 
       {songs.length === 0 ? (
         <EmptyState>No songs yet. Add your first song to get started!</EmptyState>
@@ -159,7 +170,13 @@ export default function SongList() {
             <div>Actions</div>
           </TableHeader>
           {songs.map((song) => (
-            <SongRow key={song.id} song={song} onPlay={() => handlePlaySong(song)} onEdit={() => handleEdit(song)} onDelete={() => handleDelete(song)} />
+            <SongRow
+              key={song.id}
+              song={song}
+              onPlay={() => handlePlaySong(song)}
+              onEdit={() => handleEdit(song)}
+              onDelete={() => handleDelete(song)}
+            />
           ))}
         </SongsTable>
       )}

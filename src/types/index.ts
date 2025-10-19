@@ -1,5 +1,6 @@
 export interface Song {
-  _id: string
+  _id?: string
+  id: string
   title: string
   artist: string
   album: string

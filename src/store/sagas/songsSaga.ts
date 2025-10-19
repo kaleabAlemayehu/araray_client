@@ -1,5 +1,5 @@
-import { call, put, takeEvery } from "redux-saga/effects"
-import { addSong, setSongs, setSongsError, setSongsLoading } from "../slices/songsSlice"
+import { call, put, takeEvery, select } from "redux-saga/effects"
+import { addSong, setSongs, setSongsError, setSongsLoading, deleteSongSuccess } from "../slices/songsSlice"
 import type { Song } from "../../types"
 
 function* handleFetchSongs() {
@@ -10,7 +10,8 @@ function* handleFetchSongs() {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const songs: Song[] = yield response.json()
-    yield put(setSongs(songs))
+    const songsWithId = songs.map((song) => ({ ...song, id: song._id }))
+    yield put(setSongs(songsWithId))
   } catch (error: any) {
     yield put(setSongsError(error.message))
   }
@@ -30,7 +31,8 @@ function* handleCreateSong(action: any) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const createdSong: Song = yield response.json()
-    yield put(addSong(createdSong))
+    const songWithId = { ...createdSong, id: createdSong._id }
+    yield put(addSong(songWithId))
   } catch (error: any) {
     yield put(setSongsError(error.message))
   }
@@ -39,7 +41,6 @@ function* handleCreateSong(action: any) {
 function* handleUpdateSong(action: any) {
   try {
     const updatedSong: Song = action.payload
-    console.log(updatedSong)
     const response: Response = yield call(fetch, `http://localhost:3000/api/v1/songs/${updatedSong._id}`, {
       method: "PUT",
       headers: {
@@ -55,8 +56,31 @@ function* handleUpdateSong(action: any) {
   }
 }
 
+function* handleDeleteSong(action: any) {
+  try {
+    const songId: string = action.payload
+    const songs: Song[] = yield select((state) => state.songs.items)
+    const songToDelete = songs.find((s) => s.id === songId)
+
+    if (!songToDelete) {
+      throw new Error("Song not found")
+    }
+
+    const response: Response = yield call(fetch, `http://localhost:3000/api/v1/songs/${songToDelete._id}`, {
+      method: "DELETE",
+    })
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    yield put(deleteSongSuccess(songId))
+  } catch (error: any) {
+    yield put(setSongsError(error.message))
+  }
+}
+
 export default function* songsSaga() {
   yield takeEvery("songs/fetchSongs", handleFetchSongs)
   yield takeEvery("songs/createSong", handleCreateSong)
   yield takeEvery("songs/updateSong", handleUpdateSong)
+  yield takeEvery("songs/deleteSong", handleDeleteSong)
 }

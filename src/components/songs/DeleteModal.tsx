@@ -1,11 +1,13 @@
 import styled from "@emotion/styled"
 import { Text } from "rebass"
+import { useDispatch } from "react-redux"
+import { deleteSong } from "../../store/slices/songsSlice"
 
 interface DeleteModalProps {
   onClose: () => void
   songTitle: string
+  songID: string
 }
-
 
 const Overlay = styled.div`
   position: fixed;
@@ -68,18 +70,30 @@ const Button = styled.button<{ variant?: "primary" | "secondary" }>`
     }
   `}
 `
-export default function DeleteModal({ onClose, songTitle }: DeleteModalProps) {
+
+export default function DeleteModal({ onClose, songTitle, songID }: DeleteModalProps) {
+  const dispatch = useDispatch()
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log(`deleting the song id : ${songID} from the model`)
+    dispatch(deleteSong(songID))
+    onClose()
+  }
+
   return (
     <>
       <Overlay onClick={onClose}>
         <FormContainer onClick={(e) => e.stopPropagation()}>
-          <Text color='black'> Are you sure you want to delete {songTitle}?</Text>
-          <ButtonGroup>
-            <Button type="submit" color="#f00">Delete</Button>
-            <Button variant="secondary" type="button" onClick={onClose}>
-              Cancel
-            </Button>
-          </ButtonGroup>
+          <form onSubmit={handleSubmit}>
+            <Text color='black'> Are you sure you want to delete {songTitle}?</Text>
+            <ButtonGroup>
+              <Button type="submit" color="#f00">Delete</Button>
+              <Button variant="secondary" type="button" onClick={onClose}>
+                Cancel
+              </Button>
+            </ButtonGroup>
+          </form>
         </FormContainer >
       </Overlay >
     </>
