@@ -39,19 +39,15 @@ const NavItem = styled(Flex) <{ isActive?: boolean }>`
   }
 `
 
-const AddButton = styled(Button)`
+const Drawer = styled(Button)`
   background-color: var(--primary);
   color: var(--background);
   border-radius: 8px;
   font-weight: 600;
   transition: background-color 0.15s ease-in-out;
   cursor: pointer;
-  border: none;
   padding: 0.5rem 1rem;
 
-  &:hover {
-    background-color: var(--accent);
-  }
 `
 
 const Overlay = styled.div`
@@ -129,9 +125,9 @@ export default function SidebarDrawer({ isOpen, onToggle, onNavigate }: SidebarD
           ))}
         </Box>
 
-        <AddButton sx={{ display: "flex", width: "min-content", alignItems: "center", gap: 3, mt: "auto" }} onClick={onToggle}>
-          {isOpen ? <ChevronLeft size={20} color="var(--background" /> : <ChevronRight size={20} color="var(--background)" />}
-        </AddButton>
+        <Drawer sx={{ display: "flex", width: "min-content", alignItems: "center", gap: 3, mt: "auto" }} onClick={onToggle}>
+          {isOpen ? <ChevronLeft size={20} color="var(--background)" /> : <ChevronRight size={20} color="var(--background)" />}
+        </Drawer>
       </SidebarContainer>
       {isOpen && <Overlay onClick={onToggle} />}
     </>
