@@ -8,26 +8,7 @@ interface SongsState {
 }
 
 const initialState: SongsState = {
-  items: [
-    {
-      id: "1",
-      title: "Blinding Lights",
-      artist: "The Weeknd",
-      album: "After Hours",
-      genre: "Synthwave",
-      audioUrl: "https://example.com/audio1.mp3",
-      duration: 200,
-    },
-    {
-      id: "2",
-      title: "Levitating",
-      artist: "Dua Lipa",
-      album: "Future Nostalgia",
-      genre: "Disco Pop",
-      audioUrl: "https://example.com/audio2.mp3",
-      duration: 203,
-    },
-  ],
+  items: [],
   loading: false,
   error: null,
 }
@@ -36,6 +17,14 @@ const songsSlice = createSlice({
   name: "songs",
   initialState,
   reducers: {
+    fetchSongs: (state) => {
+      state.loading = true
+      state.error = null
+    },
+    setSongs: (state, action: PayloadAction<Song[]>) => {
+      state.items = action.payload
+      state.loading = false
+    },
     addSong: (state, action: PayloadAction<Song>) => {
       state.items.push(action.payload)
     },
@@ -53,9 +42,10 @@ const songsSlice = createSlice({
     },
     setSongsError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
+      state.loading = false
     },
   },
 })
 
-export const { addSong, updateSong, deleteSong, setSongsLoading, setSongsError } = songsSlice.actions
+export const { fetchSongs, setSongs, addSong, updateSong, deleteSong, setSongsLoading, setSongsError } = songsSlice.actions
 export default songsSlice.reducer

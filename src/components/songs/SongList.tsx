@@ -1,8 +1,9 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import styled from "@emotion/styled"
 import { useSelector, useDispatch } from "react-redux"
 import type { RootState } from "../../store/store"
 import { setCurrentSong, setQueue, setIsPlaying } from "../../store/slices/playbackSlice"
+import { fetchSongs } from "../../store/slices/songsSlice"
 import SongForm from "./SongForm"
 import DeleteModal from "./DeleteModal"
 import SongRow from "./SongRow"
@@ -107,6 +108,10 @@ export default function SongList() {
   const [editingSong, setEditingSong] = useState<Song | null>(null)
   const dispatch = useDispatch()
   const songs = useSelector((state: RootState) => state.songs.items)
+
+  useEffect(() => {
+    dispatch(fetchSongs())
+  }, [dispatch])
 
   const handlePlaySong = (song: Song) => {
     dispatch(setCurrentSong(song))

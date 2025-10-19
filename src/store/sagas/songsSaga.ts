@@ -1,35 +1,21 @@
-import { put, takeEvery } from "redux-saga/effects"
-import { addSong, updateSong, deleteSong } from "../slices/songsSlice"
+import { call, put, takeEvery } from "redux-saga/effects"
+import { setSongs, setSongsError, setSongsLoading } from "../slices/songsSlice"
+import type { Song } from "../../types"
 
-function* handleAddSong(action: any) {
+function* handleFetchSongs() {
   try {
-    // Placeholder for API call
-    yield put(addSong(action.payload))
-  } catch (error) {
-    console.error("Error adding song:", error)
-  }
-}
-
-function* handleUpdateSong(action: any) {
-  try {
-    // Placeholder for API call
-    yield put(updateSong(action.payload))
-  } catch (error) {
-    console.error("Error updating song:", error)
-  }
-}
-
-function* handleDeleteSong(action: any) {
-  try {
-    // Placeholder for API call
-    yield put(deleteSong(action.payload))
-  } catch (error) {
-    console.error("Error deleting song:", error)
+    yield put(setSongsLoading(true))
+    const response: Response = yield call(fetch, "http://localhost:3000/api/v1/songs")
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const songs: Song[] = yield response.json()
+    yield put(setSongs(songs))
+  } catch (error: any) {
+    yield put(setSongsError(error.message))
   }
 }
 
 export default function* songsSaga() {
-  yield takeEvery("songs/addSong", handleAddSong)
-  yield takeEvery("songs/updateSong", handleUpdateSong)
-  yield takeEvery("songs/deleteSong", handleDeleteSong)
+  yield takeEvery("songs/fetchSongs", handleFetchSongs)
 }
