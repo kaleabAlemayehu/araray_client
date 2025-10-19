@@ -153,7 +153,7 @@ export default function PlayerBar() {
       sx={{
         position: "fixed",
         bottom: 0,
-        left: 300,
+        left: 250,
         right: 0,
         bg: "var(--secondary)",
         borderTop: `1px solid var(--card)`,

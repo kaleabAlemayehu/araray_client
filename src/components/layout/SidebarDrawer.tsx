@@ -1,7 +1,7 @@
 "use client"
 import { Box, Flex, Button, Text } from "rebass"
 import styled from "@emotion/styled"
-import { Home, Music, BarChart3, Plus, X } from "lucide-react"
+import { Home, Music, BarChart3, Plus, X, ChevronLeft, ChevronRight } from "lucide-react"
 
 interface SidebarDrawerProps {
   isOpen: boolean
@@ -129,12 +129,10 @@ export default function SidebarDrawer({ isOpen, onToggle, onNavigate }: SidebarD
           ))}
         </Box>
 
-        <AddButton sx={{ display: "flex", alignItems: "center", gap: 3, mt: "auto" }}>
-          <Plus size={20} />
-          {isOpen && "Add Song"}
+        <AddButton sx={{ display: "flex", width: "min-content", alignItems: "center", gap: 3, mt: "auto" }} onClick={onToggle}>
+          {isOpen ? <ChevronLeft size={20} color="var(--background" /> : <ChevronRight size={20} color="var(--background)" />}
         </AddButton>
       </SidebarContainer>
-
       {isOpen && <Overlay onClick={onToggle} />}
     </>
   )

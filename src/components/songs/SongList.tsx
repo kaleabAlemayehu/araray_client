@@ -47,6 +47,7 @@ const AddButton = styled.button`
   padding: 0.5rem 1rem;
   background-color: var(--primary);
   color: var(--background);
+  border: 1px solid transparent;
   border-radius: 24px;
   font-weight: 600;
   font-size: 0.875rem;
@@ -54,6 +55,8 @@ const AddButton = styled.button`
 
   &:hover {
     background-color: var(--accent);
+    color: var(--foreground);
+    border: 1px solid var(--primary);
     transform: scale(1.02);
   }
 
