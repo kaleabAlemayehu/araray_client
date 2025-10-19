@@ -36,7 +36,27 @@ function* handleCreateSong(action: any) {
   }
 }
 
+function* handleUpdateSong(action: any) {
+  try {
+    const updatedSong: Song = action.payload
+    console.log(updatedSong)
+    const response: Response = yield call(fetch, `http://localhost:3000/api/v1/songs/${updatedSong._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedSong),
+    })
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+  } catch (error: any) {
+    yield put(setSongsError(error.message))
+  }
+}
+
 export default function* songsSaga() {
   yield takeEvery("songs/fetchSongs", handleFetchSongs)
   yield takeEvery("songs/createSong", handleCreateSong)
+  yield takeEvery("songs/updateSong", handleUpdateSong)
 }
