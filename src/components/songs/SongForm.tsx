@@ -24,6 +24,11 @@ const Overlay = styled.div`
   z-index: var(--z-index-overlay);
   padding: 1rem;
 `
+const Info = styled.span`
+  font-size:12px;
+  font-style: italic;
+  font-weight:100;
+`
 
 const FormContainer = styled.div`
   background-color: #fff;
@@ -303,7 +308,7 @@ export default function SongForm({ onClose, initialSong }: SongFormProps) {
           </FormGroup>
 
           <FormGroup>
-            <Label htmlFor="audioFile">Audio File</Label>
+            <Label htmlFor="audioFile">Audio File <Info>wait for the upload</Info></Label>
             <Input id="audioFile" name="audioFile" type="file" onChange={handleFileChange} />
           </FormGroup>
 
@@ -329,6 +334,6 @@ export default function SongForm({ onClose, initialSong }: SongFormProps) {
           </ButtonGroup>
         </form>
       </FormContainer>
-    </Overlay>
+    </Overlay >
   )
 }
