@@ -5,7 +5,7 @@ import type { Song } from "../../types"
 function* handleFetchSongs() {
   try {
     yield put(setSongsLoading(true))
-    const response: Response = yield call(fetch, "http://localhost:3000/api/v1/songs")
+    const response: Response = yield call(fetch, `${import.meta.env.VITE_API_URL}/songs`)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
@@ -20,7 +20,7 @@ function* handleFetchSongs() {
 function* handleCreateSong(action: any) {
   try {
     const newSong: Song = action.payload
-    const response: Response = yield call(fetch, "http://localhost:3000/api/v1/songs", {
+    const response: Response = yield call(fetch, `${import.meta.env.VITE_API_URL}/songs`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -41,7 +41,7 @@ function* handleCreateSong(action: any) {
 function* handleUpdateSong(action: any) {
   try {
     const updatedSong: Song = action.payload
-    const response: Response = yield call(fetch, `http://localhost:3000/api/v1/songs/${updatedSong._id}`, {
+    const response: Response = yield call(fetch, `${import.meta.env.VITE_API_URL}/songs/${updatedSong._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -66,7 +66,7 @@ function* handleDeleteSong(action: any) {
       throw new Error("Song not found")
     }
 
-    const response: Response = yield call(fetch, `http://localhost:3000/api/v1/songs/${songToDelete._id}`, {
+    const response: Response = yield call(fetch, `${import.meta.env.VITE_API_URL}/songs/${songToDelete._id}`, {
       method: "DELETE",
     })
     if (!response.ok) {

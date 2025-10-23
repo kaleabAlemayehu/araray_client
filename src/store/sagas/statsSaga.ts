@@ -3,7 +3,7 @@ import { setStats, setStatsError } from "../slices/statsSlice"
 
 function* handleFetchStats() {
   try {
-    const response: Response = yield call(fetch, "http://localhost:3000/api/v1/songs/stats")
+    const response: Response = yield call(fetch, `${import.meta.env.VITE_API_URL}/songs/stats`)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }

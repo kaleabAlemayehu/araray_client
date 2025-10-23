@@ -191,7 +191,7 @@ export default function SongForm({ onClose, initialSong }: SongFormProps) {
       uploadFormData.append("song", file)
 
       try {
-        const response = await fetch("http://localhost:3000/api/v1/songs/upload", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/songs/upload`, {
           method: "POST",
           body: uploadFormData,
         })
