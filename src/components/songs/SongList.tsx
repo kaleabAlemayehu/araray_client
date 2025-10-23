@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import styled from "@emotion/styled"
 import { useSelector, useDispatch } from "react-redux"
@@ -159,12 +157,12 @@ export default function SongList() {
         </AddButton>
       </Header>
 
-      {showForm && <SongForm onClose={handleCloseForm} initialSong={editingSong} />}
+      {showForm && <SongForm onClose={handleCloseForm} initialSong={editingSong as Song} />}
       {deletingSong && (
         <DeleteModal
           onClose={handleCloseDeleteModal}
           songTitle={deletingSong.title}
-          songID={deletingSong.id}
+          songID={deletingSong?.id as string}
         />
       )}
 

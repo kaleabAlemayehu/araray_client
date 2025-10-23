@@ -1,20 +1,17 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
-    "target": "ES2020",
+    "target": "ES2020",                 // modern JS target
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
+    "module": "ESNext",                 // works well with Vite/React/Webpack
+    "moduleResolution": "Node",         // resolves Node-style imports
+    "esModuleInterop": true,            // allows default imports from CJS modules
     "allowSyntheticDefaultImports": true,
-    "strict": true,
+    "strict": true,                     // enable type checks
+    "noImplicitAny": false,             // stops TS7006 errors
+    "skipLibCheck": true,
     "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",  // or "react" or "react-jsxdev"
-    "module": "esnext",
-    "target": "es6",
+    "noEmit": true,                     // TS will not output files
+    "jsx": "react-jsx"                  // use the new JSX transform
   },
-  "include": ["src"] ,
-    // "jsx": "react-jsx",
-    "moduleResolution": "bundler"
+  "include": ["src"]
 }

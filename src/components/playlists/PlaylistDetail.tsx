@@ -198,7 +198,7 @@ export const PlaylistDetail = ({ playlistId }: PlaylistDetailProps) => {
                 <SongTitle>{song.title}</SongTitle>
                 <SongArtist>{song.artist}</SongArtist>
               </SongInfo>
-              <ActionButton onClick={() => handleRemoveSong(song.id)} title="Remove from playlist">
+              <ActionButton onClick={() => handleRemoveSong(song?.id as string)} title="Remove from playlist">
                 <Trash2 />
               </ActionButton>
             </SongItem>
