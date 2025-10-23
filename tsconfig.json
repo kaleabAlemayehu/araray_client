@@ -1,19 +1,20 @@
 {
   "compilerOptions": {
+    "outDir": "./dist",
     "target": "ES2020",
-    "useDefineForEnumMembers": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "jsx": "react-jsx",  // or "react" or "react-jsxdev"
+    "module": "esnext",
+    "target": "es6",
+  },
+  "include": ["src"] ,
     // "jsx": "react-jsx",
     "moduleResolution": "bundler"
-  },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.app.json" }]
 }
