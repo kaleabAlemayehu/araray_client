@@ -1,11 +1,16 @@
 import { call, put, takeEvery, select } from "redux-saga/effects"
 import { addSong, setSongs, setSongsError, setSongsLoading, deleteSongSuccess } from "../slices/songsSlice"
 import type { Song } from "../../types"
+import type { RootState } from "../store"
+
+const getGenre = (state: RootState) => state.songs.genre
 
 function* handleFetchSongs() {
   try {
     yield put(setSongsLoading(true))
-    const response: Response = yield call(fetch, `${import.meta.env.VITE_API_URL}/songs`)
+    const genre: string = yield select(getGenre)
+    const url = genre ? `${import.meta.env.VITE_API_URL}/songs?genre=${genre}` : `${import.meta.env.VITE_API_URL}/songs`
+    const response: Response = yield call(fetch, url)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
@@ -59,7 +64,7 @@ function* handleUpdateSong(action: any) {
 function* handleDeleteSong(action: any) {
   try {
     const songId: string = action.payload
-    const songs: Song[] = yield select((state) => state.songs.items)
+    const songs: Song[] = yield select((state: RootState) => state.songs.items)
     const songToDelete = songs.find((s) => s.id === songId)
 
     if (!songToDelete) {
@@ -83,4 +88,5 @@ export default function* songsSaga() {
   yield takeEvery("songs/createSong", handleCreateSong)
   yield takeEvery("songs/updateSong", handleUpdateSong)
   yield takeEvery("songs/deleteSong", handleDeleteSong)
+  yield takeEvery("songs/setGenre", handleFetchSongs)
 }

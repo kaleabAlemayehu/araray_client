@@ -6,6 +6,7 @@ interface SongsState {
   loading: boolean
   error: string | null
   searchQuery: string
+  genre: string
 }
 
 const initialState: SongsState = {
@@ -13,6 +14,7 @@ const initialState: SongsState = {
   loading: false,
   error: null,
   searchQuery: "",
+  genre: "",
 }
 
 const songsSlice = createSlice({
@@ -58,8 +60,11 @@ const songsSlice = createSlice({
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload
     },
+    setGenre: (state, action: PayloadAction<string>) => {
+      state.genre = action.payload
+    },
   },
 })
 
-export const { fetchSongs, setSongs, createSong, addSong, updateSong, deleteSong, deleteSongSuccess, setSongsLoading, setSongsError, setSearchQuery } = songsSlice.actions
+export const { fetchSongs, setSongs, createSong, addSong, updateSong, deleteSong, deleteSongSuccess, setSongsLoading, setSongsError, setSearchQuery, setGenre } = songsSlice.actions
 export default songsSlice.reducer
