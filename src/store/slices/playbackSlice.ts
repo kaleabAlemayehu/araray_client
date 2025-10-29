@@ -41,19 +41,11 @@ const playbackSlice = createSlice({
     setRepeat: (state, action: PayloadAction<"off" | "one" | "all">) => {
       state.repeat = action.payload
     },
-    nextTrack: (state) => {
-      if (state.currentIndex < state.queue.length - 1) {
-        state.currentIndex += 1
-        state.currentSong = state.queue[state.currentIndex]
-        state.currentTime = 0
-      }
+    nextTrack: () => {
+      // Logic is now in playbackSaga
     },
-    previousTrack: (state) => {
-      if (state.currentIndex > 0) {
-        state.currentIndex -= 1
-        state.currentSong = state.queue[state.currentIndex]
-        state.currentTime = 0
-      }
+    previousTrack: () => {
+      // Logic is now in playbackSaga
     },
   },
 })

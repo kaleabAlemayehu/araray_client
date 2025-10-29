@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { useEffect, useRef } from "react"
 import { setIsPlaying, nextTrack, previousTrack, toggleShuffle, setRepeat, setCurrentTime } from "../../store/slices/playbackSlice"
 import type { RootState } from "../../store/store"
-import { Play, Pause, SkipBack, SkipForward, Shuffle as Shuffle2, Repeat2 } from "lucide-react"
+import { Play, Pause, SkipBack, SkipForward, Shuffle as ShuffleIcon, Repeat as RepeatIcon, Repeat1 as Repeat1Icon } from "lucide-react"
 
 const ProgressBar = styled.div`
   flex: 1;
@@ -14,9 +14,37 @@ const ProgressBar = styled.div`
   border-radius: 2px;
   cursor: pointer;
   transition: background-color 0.15s ease-in-out;
-
+  position: relative;
   &:hover {
-    background-color: var(--card);
+    background-color: var(--accent);
+  }
+`
+
+const Progress = styled.div`
+  height: 100%;
+  background-color: var(--primary);
+  border-radius: 2px;
+  transition: width 0.1s linear;
+`
+
+const ProgressCircle = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  transform: translate(-50%, -50%);
+  transition: left 0.1s linear;
+  opacity: 0;
+`
+
+const ProgressBarContainer = styled.div`
+  flex: 1;
+  position: relative;
+  &:hover ${ProgressCircle.toString()} {
+    opacity: 1;
   }
 `
 
@@ -24,44 +52,58 @@ const ControlButton = styled(Button) <{ isActive?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: ${(props) => (props.isActive ? "var(--primary)" : "transparent")};
-  color: ${(props) => (props.isActive ? "var(--background)" : "var(--foreground)")};
-  transition: all 0.15s ease-in-out;
-  cursor: pointer;
-  border: none;
-
-  &:hover {
-    background-color: ${(props) => (props.isActive ? "var(--accent)" : "var(--secondary)")};
-    color: var(--foreground);
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
-`
-
-const PlayButton = styled(ControlButton)`
   width: 48px;
   height: 48px;
-  background-color: var(--primary);
-  color: var(--background);
-
+  border-radius: 50%;
+  color: ${(props) => (props.isActive ? "var(--background)" : "var(--foreground)")};
+  background-color: ${(props) => (props.isActive ? "var(--foreground)" : "transparent")};
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  border: transparent solid 0.1px;
   &:hover {
-    background-color: var(--accent);
+    background-color: var(--secondary);
+    border: var(--foreground) solid 0.1px;
   }
-
   svg {
     width: 24px;
     height: 24px;
   }
+  &:active {
+    background-color: var(--foreground);
+    color: var(--background);
+  } 
 `
+
+
+
+const PlayButton = styled(Button)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: var(--background);
+  border: transparent solid 0.1px;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+  &:hover {
+    background-color: var(--accent);
+    color: var(--foreground);
+    border: var(--foreground) solid 0.1px;
+  }
+  svg {
+    width: 40px;
+    height: 40px;
+  }
+`
+
+
 
 export default function PlayerBar() {
   const dispatch = useDispatch()
+
   const { currentSong, isPlaying, shuffle, repeat, currentTime } = useSelector((state: RootState) => state.playback)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
@@ -100,6 +142,16 @@ export default function PlayerBar() {
     return `${minutes}:${seconds.toString().padStart(2, "0")}`
   }
 
+  const renderRepeatIcon = () => {
+    switch (repeat) {
+      case "one":
+        return <Repeat1Icon size={20} />
+      case "all":
+        return <RepeatIcon size={20} />
+      default:
+        return <RepeatIcon size={20} />
+    }
+  }
   // Initialize audio element
   useEffect(() => {
     if (!audioRef.current) {
@@ -108,14 +160,7 @@ export default function PlayerBar() {
         dispatch(setCurrentTime(audioRef.current?.currentTime || 0))
       })
       audioRef.current.addEventListener("ended", () => {
-        if (repeat === "one") {
-          if (audioRef.current) {
-            audioRef.current.currentTime = 0
-            audioRef.current.play()
-          }
-        } else {
-          dispatch(nextTrack())
-        }
+        dispatch(nextTrack())
       })
     }
 
@@ -124,12 +169,10 @@ export default function PlayerBar() {
         audioRef.current.pause()
       }
     }
-  }, [dispatch, repeat])
+  }, [dispatch])
 
-  // Update audio source and play/pause
   useEffect(() => {
     if (!audioRef.current) return
-
     if (currentSong) {
       if (audioRef.current.src !== currentSong.audioUrl) {
         audioRef.current.src = currentSong.audioUrl
@@ -144,9 +187,11 @@ export default function PlayerBar() {
     }
   }, [currentSong, isPlaying, currentTime])
 
+  const progressPercent = audioRef.current?.duration ? (currentTime / audioRef.current.duration) * 100 : 0
+
+
   return (
-    <Box
-      as="footer"
+    <Box as="footer"
       sx={{
         position: "fixed",
         bottom: 0,
@@ -162,20 +207,18 @@ export default function PlayerBar() {
       }}
     >
       <Flex sx={{ alignItems: "center", gap: 3, minWidth: ["120px", "200px"], flex: "0 0 auto" }}>
-        <Box
-          sx={{
-            width: ["40px", "56px"],
-            height: ["40px", "56px"],
-            bg: "var(--card)",
-            borderRadius: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "var(--muted-foreground)",
-            fontSize: 1,
-            flexShrink: 0,
-          }}
-        >
+        <Box sx={{
+          width: ["40px", "56px"],
+          height: ["40px", "56px"],
+          bg: "var(--card)",
+          borderRadius: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "var(--muted-foreground)",
+          fontSize: 1,
+          flexShrink: 0,
+        }}>
           ♪
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: 0 }}>
@@ -187,8 +230,7 @@ export default function PlayerBar() {
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
-            }}
-          >
+            }}>
             {currentSong?.title || "No song playing"}
           </Text>
           <Text
@@ -198,8 +240,7 @@ export default function PlayerBar() {
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
-            }}
-          >
+            }}>
             {currentSong?.artist || "Select a song"}
           </Text>
         </Box>
@@ -207,13 +248,18 @@ export default function PlayerBar() {
 
       <Flex sx={{ flex: 1, alignItems: "center", gap: 3, minWidth: "200px", display: ["none", "flex"] }}>
         <Text sx={{ fontSize: 0, color: "var(--muted-foreground)", minWidth: "40px" }}>{formatTime(currentTime)}</Text>
-        <ProgressBar onClick={handleProgressClick} />
+        <ProgressBarContainer>
+          <ProgressBar onClick={handleProgressClick}>
+            <Progress style={{ width: `${progressPercent}%` }} />
+            <ProgressCircle style={{ left: `${progressPercent}%` }} />
+          </ProgressBar>
+        </ProgressBarContainer>
         <Text sx={{ fontSize: 0, color: "var(--muted-foreground)", minWidth: "40px" }}>{formatTime(audioRef.current?.duration || 0)}</Text>
       </Flex>
 
       <Flex sx={{ alignItems: "center", gap: 2, flex: "0 0 auto" }}>
         <ControlButton onClick={handleShuffle} isActive={shuffle}>
-          <Shuffle2 size={20} />
+          <ShuffleIcon size={20} />
         </ControlButton>
         <ControlButton onClick={handlePrevious}>
           <SkipBack size={20} />
@@ -223,9 +269,8 @@ export default function PlayerBar() {
           <SkipForward size={20} />
         </ControlButton>
         <ControlButton onClick={handleRepeat} isActive={repeat !== "off"}>
-          <Repeat2 size={20} />
+          {renderRepeatIcon()}
         </ControlButton>
       </Flex>
-    </Box>
-  )
+    </Box>)
 }
