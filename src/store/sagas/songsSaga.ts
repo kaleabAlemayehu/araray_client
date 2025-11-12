@@ -1,4 +1,4 @@
-import { call, put, takeEvery, select } from "redux-saga/effects"
+import { call, put, takeEvery, select, takeLatest } from "redux-saga/effects"
 import { addSong, setSongs, setSongsError, setSongsLoading, deleteSongSuccess } from "../slices/songsSlice"
 import type { Song } from "../../types"
 import type { RootState } from "../store"
@@ -85,7 +85,7 @@ function* handleDeleteSong(action: any) {
 
 export default function* songsSaga() {
   yield takeEvery("songs/fetchSongs", handleFetchSongs)
-  yield takeEvery("songs/createSong", handleCreateSong)
+  yield takeLatest("songs/createSong", handleCreateSong)
   yield takeEvery("songs/updateSong", handleUpdateSong)
   yield takeEvery("songs/deleteSong", handleDeleteSong)
   yield takeEvery("songs/setGenre", handleFetchSongs)

@@ -8,14 +8,7 @@ interface PlaylistsState {
 }
 
 const initialState: PlaylistsState = {
-  items: [
-    {
-      id: "p1",
-      name: "Favorites",
-      songs: [],
-      createdAt: Date.now(),
-    },
-  ],
+  items: [],
   loading: false,
   error: null,
 }
@@ -24,6 +17,14 @@ const playlistsSlice = createSlice({
   name: "playlists",
   initialState,
   reducers: {
+    fetchPlaylists: (state) => {
+      state.loading = true
+      state.error = null
+    },
+    setPlaylists: (state, action: PayloadAction<Playlist[]>) => {
+      state.items = action.payload
+      state.loading = false
+    },
     createPlaylist: (state, action: PayloadAction<Playlist>) => {
       state.items.push(action.payload)
     },
@@ -58,6 +59,8 @@ const playlistsSlice = createSlice({
 })
 
 export const {
+  fetchPlaylists,
+  setPlaylists,
   createPlaylist,
   updatePlaylist,
   deletePlaylist,
