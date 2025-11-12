@@ -10,8 +10,10 @@ export interface Song {
 }
 
 export interface Playlist {
-  id: string
+  _id?: string
+  id?: string
   name: string
+  description?: string
   songs: Song[]
   createdAt: number
 }
