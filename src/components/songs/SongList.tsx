@@ -3,7 +3,7 @@ import styled from "@emotion/styled"
 import { useSelector, useDispatch } from "react-redux"
 import type { RootState } from "../../store/store"
 import { setCurrentSong, setQueue, setIsPlaying } from "../../store/slices/playbackSlice"
-import { fetchSongs } from "../../store/slices/songsSlice"
+import { deleteSong, fetchSongs } from "../../store/slices/songsSlice"
 import SongForm from "./SongForm"
 import SongRow from "./SongRow"
 import GenreFilter from "./GenreFilter"
@@ -149,6 +149,10 @@ export default function SongList() {
   const handleCloseDeleteModal = () => {
     setDeletingSong(null)
   }
+  const handleDeleteSong = (entityID: string) => {
+    dispatch(deleteSong(entityID))
+    handleCloseDeleteModal()
+  }
 
   return (
     <SongListContainer>
@@ -164,8 +168,9 @@ export default function SongList() {
       {deletingSong && (
         <DeleteModal
           onClose={handleCloseDeleteModal}
-          songTitle={deletingSong.title}
-          songID={deletingSong?.id as string}
+          onSubmit={handleDeleteSong}
+          entityTitle={deletingSong.title}
+          entityID={deletingSong?.id as string}
         />
       )}
 
