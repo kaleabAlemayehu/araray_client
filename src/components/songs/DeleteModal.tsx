@@ -1,12 +1,11 @@
 import styled from "@emotion/styled"
 import { Text } from "rebass"
-import { useDispatch } from "react-redux"
-import { deleteSong } from "../../store/slices/songsSlice"
 
 interface DeleteModalProps {
   onClose: () => void
-  songTitle: string
-  songID: string
+  onSubmit: (id: string) => void
+  entityTitle: string
+  entityID: string
 }
 
 const Overlay = styled.div`
@@ -58,7 +57,9 @@ const Button = styled.button<{ variant?: "primary" | "secondary" }>`
     border: 1px solid var(--secondary);
 
     &:hover {
-      background-color: #0f0;
+      background-color: #fff;
+      color: var(--foreground);
+      border: 1px solid var(--foreground);
     }
   `
       : `
@@ -66,29 +67,22 @@ const Button = styled.button<{ variant?: "primary" | "secondary" }>`
     color: var(--background);
 
     &:hover {
-      background-color: #f00;
+      background-color: #fff;
+      color: var(--foreground);
+      border: 1px solid var(--foreground);
     }
   `}
 `
 
-export default function DeleteModal({ onClose, songTitle, songID }: DeleteModalProps) {
-  const dispatch = useDispatch()
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log(`deleting the song id : ${songID} from the model`)
-    dispatch(deleteSong(songID))
-    onClose()
-  }
-
+export default function DeleteModal({ onClose, onSubmit, entityTitle, entityID }: DeleteModalProps) {
   return (
     <>
       <Overlay onClick={onClose}>
         <FormContainer onClick={(e) => e.stopPropagation()}>
-          <form onSubmit={handleSubmit}>
-            <Text color='black'> Are you sure you want to delete {songTitle}?</Text>
+          <form >
+            <Text color='black'> Are you sure you want to delete {entityTitle}?</Text>
             <ButtonGroup>
-              <Button type="submit" color="#f00">Delete</Button>
+              <Button onClick={() => onSubmit(entityID)} type="submit" color="#f00">Delete</Button>
               <Button variant="secondary" type="button" onClick={onClose}>
                 Cancel
               </Button>
