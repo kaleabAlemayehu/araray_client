@@ -1,11 +1,10 @@
-import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import styled from "@emotion/styled"
 import { useSelector, useDispatch } from "react-redux"
 import type { RootState } from "../../store/store"
-import { createPlaylist, deletePlaylist } from "../../store/slices/playlistsSlice"
+import { createPlaylist, deletePlaylist, fetchPlaylists } from "../../store/slices/playlistsSlice"
 import { Plus, Trash2 } from "lucide-react"
+import AddPlaylistModal from "./AddPlaylistModal"
 
 interface PlaylistListProps {
   selectedId: string | null
@@ -127,18 +126,14 @@ export const PlaylistList = ({ selectedId, onSelect }: PlaylistListProps) => {
   const dispatch = useDispatch()
   const playlists = useSelector((state: RootState) => state.playlists.items)
 
+  useEffect(() => {
+    dispatch(fetchPlaylists())
+  }, [dispatch])
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
   const handleAddPlaylist = () => {
-    const name = prompt("Enter playlist name:")
-    if (name && name.trim()) {
-      dispatch(
-        createPlaylist({
-          id: Date.now().toString(),
-          name: name.trim(),
-          songs: [],
-          createdAt: Date.now(),
-        }),
-      )
-    }
+    setIsModalOpen(true)
   }
 
   const handleDeletePlaylist = (e: React.MouseEvent, id: string) => {
@@ -160,6 +155,8 @@ export const PlaylistList = ({ selectedId, onSelect }: PlaylistListProps) => {
         </AddButton>
       </Header>
 
+      {isModalOpen && <AddPlaylistModal onClose={() => setIsModalOpen(false)} />}
+
       {playlists.length === 0 ? (
         <EmptyState>No playlists yet. Create one to get started!</EmptyState>
       ) : (
@@ -168,12 +165,12 @@ export const PlaylistList = ({ selectedId, onSelect }: PlaylistListProps) => {
             <PlaylistItem
               key={playlist.id}
               isSelected={selectedId === playlist.id}
-              onClick={() => onSelect(playlist.id)}
+              onClick={() => onSelect(playlist.id as string)}
             >
-              <PlaylistName>{playlist.name}</PlaylistName>
+              <PlaylistName>{playlist.name} </PlaylistName>
               <DeleteButton
                 className="delete-button"
-                onClick={(e) => handleDeletePlaylist(e, playlist.id)}
+                onClick={(e) => handleDeletePlaylist(e, playlist.id as string)}
               >
                 <Trash2 />
               </DeleteButton>

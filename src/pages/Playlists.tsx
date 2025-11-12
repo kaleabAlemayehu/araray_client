@@ -28,16 +28,36 @@ const ContentWrapper = styled.div`
   }
 `
 
+const EmptyDetailState = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--card);
+  border-radius: 8px;
+  padding: 1.5rem;
+  color: var(--muted-foreground);
+  font-size: 1rem;
+  min-height: 200px; /* Ensure it takes up some space */
+`
+
 export default function Playlists() {
   const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null)
-  const playlists = useSelector((state: RootState) => state.playlists.items)
+  // const playlists = useSelector((state: RootState) => state.playlists.items)
+  function handlePlaylistSelect(id: string) {
+    console.log("playlistId", id)
+    setSelectedPlaylistId(id)
+  }
 
   return (
     <PlaylistsContainer>
       <Title>Playlists</Title>
       <ContentWrapper>
-        <PlaylistList selectedId={selectedPlaylistId} onSelect={setSelectedPlaylistId} />
-        {selectedPlaylistId && <PlaylistDetail playlistId={selectedPlaylistId} />}
+        <PlaylistList selectedId={selectedPlaylistId} onSelect={handlePlaylistSelect} />
+        {selectedPlaylistId ? (
+          <PlaylistDetail playlistId={selectedPlaylistId} />
+        ) : (
+          <EmptyDetailState>Select a playlist to view its details.</EmptyDetailState>
+        )}
       </ContentWrapper>
     </PlaylistsContainer>
   )
