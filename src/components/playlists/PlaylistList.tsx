@@ -3,6 +3,7 @@ import styled from "@emotion/styled"
 import { useSelector, useDispatch } from "react-redux"
 import type { RootState } from "../../store/store"
 import { createPlaylist, deletePlaylist, fetchPlaylists } from "../../store/slices/playlistsSlice"
+import DeleteModal from "../songs/DeleteModal"
 import { Plus, Trash2 } from "lucide-react"
 import AddPlaylistModal from "./AddPlaylistModal"
 
@@ -125,6 +126,7 @@ const EmptyState = styled.div`
 export const PlaylistList = ({ selectedId, onSelect }: PlaylistListProps) => {
   const dispatch = useDispatch()
   const playlists = useSelector((state: RootState) => state.playlists.items)
+  const [deletingPlaylist, setDeletingPlaylist] = useState<string | null>(null)
 
   useEffect(() => {
     dispatch(fetchPlaylists())
@@ -136,13 +138,14 @@ export const PlaylistList = ({ selectedId, onSelect }: PlaylistListProps) => {
     setIsModalOpen(true)
   }
 
-  const handleDeletePlaylist = (e: React.MouseEvent, id: string) => {
+  const handlePlaylistModel = (e: React.MouseEvent, id: string) => {
     e.stopPropagation()
-    if (confirm("Delete this playlist?")) {
-      dispatch(deletePlaylist(id))
-      if (selectedId === id) {
-        onSelect("")
-      }
+    setDeletingPlaylist(id)
+  }
+  function handleDeletePlaylist(id: string) {
+    dispatch(deletePlaylist(id))
+    if (selectedId === id) {
+      onSelect("")
     }
   }
 
@@ -170,10 +173,19 @@ export const PlaylistList = ({ selectedId, onSelect }: PlaylistListProps) => {
               <PlaylistName>{playlist.name} </PlaylistName>
               <DeleteButton
                 className="delete-button"
-                onClick={(e) => handleDeletePlaylist(e, playlist.id as string)}
+                onClick={(e) => handlePlaylistModel(e, playlist.id as string)}
               >
                 <Trash2 />
               </DeleteButton>
+              {deletingPlaylist === playlist.id && (
+                <DeleteModal
+                  onClose={() => setDeletingPlaylist(null)}
+                  onSubmit={handleDeletePlaylist}
+                  entityTitle={playlist.name}
+                  entityID={playlist.id as string}
+                />
+              )}
+
             </PlaylistItem>
           ))}
         </PlaylistItemContainer>
