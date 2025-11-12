@@ -9,7 +9,7 @@ import SongRow from "./SongRow"
 import GenreFilter from "./GenreFilter"
 import { Plus } from "lucide-react"
 import type { Song } from "../../types"
-import DeleteModal from "./DeleteModal"
+import DeleteModal from "../common/DeleteModal"
 
 const SongListContainer = styled.div`
   display: flex;

@@ -1,7 +1,5 @@
 import { useState } from "react"
 import styled from "@emotion/styled"
-import { useSelector } from "react-redux"
-import type { RootState } from "../store/store"
 import { PlaylistList } from "../components/playlists/PlaylistList"
 import { PlaylistDetail } from "../components/playlists/PlaylistDetail"
 
