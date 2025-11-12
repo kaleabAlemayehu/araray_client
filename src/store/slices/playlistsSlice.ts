@@ -35,6 +35,10 @@ const playlistsSlice = createSlice({
       }
     },
     deletePlaylist: (state, action: PayloadAction<string>) => {
+      state.loading = true
+      state.error = null
+    },
+    deletePlaylistSuccess: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter((p) => p.id !== action.payload)
     },
     addSongToPlaylist: (state, action: PayloadAction<{ playlistId: string; song: any }>) => {
@@ -64,6 +68,7 @@ export const {
   createPlaylist,
   updatePlaylist,
   deletePlaylist,
+  deletePlaylistSuccess,
   addSongToPlaylist,
   removeSongFromPlaylist,
   setPlaylistsLoading,

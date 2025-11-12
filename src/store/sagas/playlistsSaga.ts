@@ -1,5 +1,5 @@
 import { call, put, takeEvery, takeLatest } from "redux-saga/effects"
-import { setPlaylists, createPlaylist, updatePlaylist, deletePlaylist, setPlaylistsError } from "../slices/playlistsSlice"
+import { setPlaylists, createPlaylist, updatePlaylist, deletePlaylistSuccess, setPlaylistsError } from "../slices/playlistsSlice"
 import { Playlist } from "../../types"
 
 
@@ -48,9 +48,15 @@ function* handleUpdatePlaylist(action: any) {
 
 function* handleDeletePlaylist(action: any) {
   try {
-    yield put(deletePlaylist(action.payload))
-  } catch (error) {
-    console.error("Error deleting playlist:", error)
+    const response: Response = yield call(fetch, `${import.meta.env.VITE_API_URL}/playlists/${action.payload}`, {
+      method: "DELETE",
+    })
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    yield put(deletePlaylistSuccess(action.payload))
+  } catch (error: any) {
+    yield put(setPlaylistsError(error.message))
   }
 }
 
